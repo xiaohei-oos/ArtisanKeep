@@ -589,6 +589,12 @@ function initEventListeners() {
     restoreStepData(1);
     showPage('questionnaire');
   });
+
+  // Floating feedback button
+  document.getElementById('btn-feedback-fab').addEventListener('click', () => {
+    tallyFeedbackSubmitted = true;
+    openTallyPopup();
+  });
 }
 
 // ===== Initialize =====
