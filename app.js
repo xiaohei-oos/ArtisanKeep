@@ -9,6 +9,8 @@ const state = {
   businessName: '',
   businessAddress: '',
   businessPhone: '',
+  useDshsForAddress: false,
+  dshsAddressRegNumber: '',
   productName: '',
   netWeight: '',
   ingredients: '',
@@ -86,6 +88,9 @@ function updateProgressBar() {
 function validateStep(step) {
   switch (step) {
     case 1:
+      if (state.useDshsForAddress) {
+        return state.businessName.trim() !== '' && state.dshsAddressRegNumber.trim() !== '';
+      }
       return state.businessName.trim() !== '' && state.businessAddress.trim() !== '';
     case 2:
       return (
@@ -110,6 +115,8 @@ function collectStepData(step) {
       state.businessName = document.getElementById('businessName').value.trim();
       state.businessAddress = document.getElementById('businessAddress').value.trim();
       state.businessPhone = document.getElementById('businessPhone').value.trim();
+      state.useDshsForAddress = document.getElementById('useDshsCheckbox').checked;
+      state.dshsAddressRegNumber = document.getElementById('dshsAddressRegNumber').value.trim();
       break;
     case 2:
       state.productName = document.getElementById('productName').value.trim();
@@ -134,6 +141,9 @@ function restoreStepData(step) {
       document.getElementById('businessName').value = state.businessName;
       document.getElementById('businessAddress').value = state.businessAddress;
       document.getElementById('businessPhone').value = state.businessPhone;
+      document.getElementById('useDshsCheckbox').checked = state.useDshsForAddress;
+      document.getElementById('dshsAddressRegNumber').value = state.dshsAddressRegNumber;
+      toggleDshsAddress();
       break;
     case 2:
       document.getElementById('productName').value = state.productName;
@@ -155,6 +165,20 @@ function restoreStepData(step) {
 }
 
 // ===== Toggle Extra Sections =====
+function toggleDshsAddress() {
+  const useDshs = document.getElementById('useDshsCheckbox').checked;
+  const addressGroup = document.getElementById('address-group');
+  const dshsGroup = document.getElementById('dshs-address-group');
+
+  if (useDshs) {
+    addressGroup.classList.add('hidden');
+    dshsGroup.classList.remove('hidden');
+  } else {
+    addressGroup.classList.remove('hidden');
+    dshsGroup.classList.add('hidden');
+  }
+}
+
 function toggleRefrigerationExtra() {
   const isRefrigerated = document.querySelector('input[name="refrigeration"]:checked').value === 'yes';
   const extra = document.getElementById('refrigeration-extra');
@@ -195,7 +219,11 @@ function generateLabelHTML() {
 
   // Business info
   html += `<div class="label-business-name">${escapeHTML(state.businessName)}</div>`;
-  html += `<div class="label-address">${escapeHTML(state.businessAddress)}</div>`;
+  if (state.useDshsForAddress) {
+    html += `<div class="label-address">DSHS Registration: ${escapeHTML(state.dshsAddressRegNumber)}</div>`;
+  } else {
+    html += `<div class="label-address">${escapeHTML(state.businessAddress)}</div>`;
+  }
   if (state.businessPhone) {
     html += `<div class="label-phone">${escapeHTML(state.businessPhone)}</div>`;
   }
@@ -243,7 +271,11 @@ function generateLabelText() {
   let text = '';
 
   text += `${state.businessName}\n`;
-  text += `${state.businessAddress}\n`;
+  if (state.useDshsForAddress) {
+    text += `DSHS Registration: ${state.dshsAddressRegNumber}\n`;
+  } else {
+    text += `${state.businessAddress}\n`;
+  }
   if (state.businessPhone) {
     text += `${state.businessPhone}\n`;
   }
@@ -380,6 +412,8 @@ function resetState() {
   state.businessName = '';
   state.businessAddress = '';
   state.businessPhone = '';
+  state.useDshsForAddress = false;
+  state.dshsAddressRegNumber = '';
   state.productName = '';
   state.netWeight = '';
   state.ingredients = '';
@@ -392,6 +426,8 @@ function resetState() {
   document.getElementById('businessName').value = '';
   document.getElementById('businessAddress').value = '';
   document.getElementById('businessPhone').value = '';
+  document.getElementById('useDshsCheckbox').checked = false;
+  document.getElementById('dshsAddressRegNumber').value = '';
   document.getElementById('productName').value = '';
   document.getElementById('netWeight').value = '';
   document.getElementById('ingredients').value = '';
@@ -401,6 +437,8 @@ function resetState() {
   document.querySelector('input[name="salesChannel"][value="direct"]').checked = true;
   document.getElementById('refrigeration-extra').classList.add('hidden');
   document.getElementById('third-party-extra').classList.add('hidden');
+  document.getElementById('address-group').classList.remove('hidden');
+  document.getElementById('dshs-address-group').classList.add('hidden');
 
   updateProgressBar();
 }
@@ -424,6 +462,9 @@ function initEventListeners() {
     goToStep(2);
     restoreStepData(2);
   });
+
+  // Step 1: DSHS checkbox toggle
+  document.getElementById('useDshsCheckbox').addEventListener('change', toggleDshsAddress);
 
   // Step 1: Back to home
   document.getElementById('btn-back-home').addEventListener('click', () => {
