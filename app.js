@@ -34,6 +34,28 @@ function showPage(pageId) {
   });
   pages[pageId].classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Trigger Tally feedback popup on results page
+  if (pageId === 'results') {
+    if (typeof Tally !== 'undefined') {
+      Tally.openPopup('7Rexkz', {
+        hideTitle: true,
+        overlay: true,
+        autoClose: 2000
+      });
+    } else {
+      console.warn('Tally not loaded yet, will retry...');
+      setTimeout(function() {
+        if (typeof Tally !== 'undefined') {
+          Tally.openPopup('7Rexkz', {
+            hideTitle: true,
+            overlay: true,
+            autoClose: 2000
+          });
+        }
+      }, 1000);
+    }
+  }
 }
 
 // ===== Toast Notification =====
