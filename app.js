@@ -27,6 +27,10 @@ const pages = {
   results: document.getElementById('page-results'),
 };
 
+// ===== Tally Feedback State =====
+let tallyPopupClosed = false;
+let tallyFeedbackSubmitted = false;
+
 // ===== Navigation =====
 function showPage(pageId) {
   Object.keys(pages).forEach((key) => {
@@ -35,28 +39,47 @@ function showPage(pageId) {
   pages[pageId].classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Trigger Tally feedback popup on results page
+  // Trigger Tally feedback popup on results page (3s delay)
   if (pageId === 'results') {
-    if (typeof Tally !== 'undefined') {
-      Tally.openPopup('7Rexkz', {
-        hideTitle: true,
-        overlay: true,
-        autoClose: 2000
-      });
-    } else {
-      console.warn('Tally not loaded yet, will retry...');
-      setTimeout(function() {
-        if (typeof Tally !== 'undefined') {
-          Tally.openPopup('7Rexkz', {
-            hideTitle: true,
-            overlay: true,
-            autoClose: 2000
-          });
-        }
-      }, 1000);
-    }
+    tallyPopupClosed = false;
+    tallyFeedbackSubmitted = false;
+    setTimeout(function() {
+      if (!tallyFeedbackSubmitted) {
+        openTallyPopup();
+      }
+    }, 3000);
   }
 }
+
+// ===== Tally Popup =====
+function openTallyPopup() {
+  if (typeof Tally === 'undefined') {
+    console.warn('Tally not loaded yet, will retry...');
+    setTimeout(function() {
+      if (typeof Tally !== 'undefined' && !tallyFeedbackSubmitted) {
+        openTallyPopup();
+      }
+    }, 1000);
+    return;
+  }
+
+  Tally.openPopup('7Rexkz', {
+    hideTitle: true,
+    overlay: true,
+    autoClose: 2000,
+    onClose: function() {
+      tallyPopupClosed = true;
+    }
+  });
+}
+
+// ===== Exit-Intent Listener =====
+document.addEventListener('mouseleave', function(event) {
+  if (event.clientY < 0 && tallyPopupClosed && !tallyFeedbackSubmitted) {
+    tallyFeedbackSubmitted = true;
+    openTallyPopup();
+  }
+});
 
 // ===== Toast Notification =====
 function showToast(message, duration = 2500) {
