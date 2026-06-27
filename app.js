@@ -255,7 +255,7 @@ function generateLabelHTML() {
 
   // Safe handling instructions (if refrigerated)
   if (state.isRefrigerated) {
-    html += `<div class="label-safe-handling">SAFE HANDLING INSTRUCTIONS: Keep refrigerated at 40&deg;F (4&deg;C) or below. Consume within 3-5 days of opening. Do not leave at room temperature for more than 2 hours.</div>`;
+    html += `<div class="label-safe-handling">SAFE HANDLING INSTRUCTIONS: To prevent illness from bacteria, keep this food refrigerated or frozen until the food is prepared for consumption.</div>`;
   }
 
   return html;
@@ -300,7 +300,7 @@ function generateLabelText() {
 
   if (state.isRefrigerated) {
     text += `\n`;
-    text += `SAFE HANDLING INSTRUCTIONS: Keep refrigerated at 40°F (4°C) or below. Consume within 3-5 days of opening. Do not leave at room temperature for more than 2 hours.\n`;
+    text += `SAFE HANDLING INSTRUCTIONS: To prevent illness from bacteria, keep this food refrigerated or frozen until the food is prepared for consumption.\n`;
   }
 
   return text;

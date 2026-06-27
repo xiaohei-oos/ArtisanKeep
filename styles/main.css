@@ -609,8 +609,7 @@ body {
   background: var(--color-success-light);
   padding: 0.25rem 0.65rem;
   border-radius: 100px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
 }
 
 .label-content {
